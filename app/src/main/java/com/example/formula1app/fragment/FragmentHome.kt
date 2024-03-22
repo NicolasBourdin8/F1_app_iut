@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.formula1app.R
+import com.example.formula1app.ui.theme.formulaFont
 import com.example.formula1app.viewModel.ViewModelHome
 
 class FragmentHome : Fragment() {
@@ -71,14 +72,7 @@ class FragmentHome : Fragment() {
 
     @Composable
     fun ContainerMainCategories(text: String, image: Int, fragmentDirection: Fragment) {
-        val formulaFont = FontFamily(
-            Font(R.font.formularegular, FontWeight.Normal),
-            Font(R.font.formulablack, FontWeight.Black),
-            Font(R.font.formulabold, FontWeight.Bold),
-            Font(R.font.formulaboldweb, FontWeight.SemiBold),
-            Font(R.font.formulaitalic, FontWeight.Normal, FontStyle.Italic),
-            Font(R.font.formulawide, FontWeight.Thin)
-        )
+
 
         Box(
             modifier = Modifier
@@ -110,7 +104,6 @@ class FragmentHome : Fragment() {
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.4f))
             ) {
-
             }
             Row(
                 verticalAlignment = Alignment.Top,
