@@ -65,9 +65,9 @@ class FragmentHome : Fragment() {
         ContainerMainCategories(
             "Constructors",
             R.drawable.constructors_button_image,
-            FragmentDrivers()
+            FragmentConstructors()
         )
-        ContainerMainCategories("Tracks", R.drawable.tracks_button_image, FragmentDrivers())
+        ContainerMainCategories("Tracks", R.drawable.tracks_button_image, FragmentTracks())
     }
 
     @Composable

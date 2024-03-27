@@ -28,9 +28,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,6 +39,7 @@ import com.example.formula1app.model.driverModel.Driver
 import com.example.formula1app.model.driverModel.DriverStanding
 import com.example.formula1app.ui.theme.formulaFont
 import com.example.formula1app.viewModel.ViewModelDrivers
+import java.text.Normalizer
 
 class FragmentDrivers : Fragment() {
     private val viewModel by viewModels<ViewModelDrivers>()
@@ -58,14 +56,6 @@ class FragmentDrivers : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         return ComposeView(requireContext()).apply {
-            val formulaFont = FontFamily(
-                Font(R.font.formularegular, FontWeight.Normal),
-                Font(R.font.formulablack, FontWeight.Black),
-                Font(R.font.formulabold, FontWeight.Bold),
-                Font(R.font.formulaboldweb, FontWeight.SemiBold),
-                Font(R.font.formulaitalic, FontWeight.Normal, FontStyle.Italic),
-                Font(R.font.formulawide, FontWeight.Thin)
-            )
             setContent {
                 Column {
                     Text(
@@ -76,9 +66,12 @@ class FragmentDrivers : Fragment() {
                         color = Color.White,
                         modifier = Modifier.padding(start = 20.dp, top = 30.dp)
                     )
-                    DisplayPilotNoAPI()
+                    DisplayPilot()
                     Spacer(modifier = Modifier.height(50.dp))
-                    Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center) {
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
                         Text(
                             text = "2024 seasons", fontSize = 15.sp,
                             fontFamily = formulaFont,
@@ -146,14 +139,9 @@ class FragmentDrivers : Fragment() {
     fun DisplayPilot() {
         viewModel.listPilot.value?.let { listPilot ->
             if (!listPilot.mRData?.standingsTable?.standingsLists?.get(0)?.driverStandings.isNullOrEmpty()) {
-                for (driver in listPilot.mRData?.standingsTable?.standingsLists?.get(0)?.driverStandings!!) {
-                    print(driver.driver?.familyName)
-                }
                 LazyRow(
                     Modifier
-                        .fillMaxSize()
-                        .padding(top = 60.dp)
-                        .fillMaxSize(),
+                        .padding(top = 60.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     itemsIndexed(listPilot.mRData?.standingsTable?.standingsLists?.get(0)?.driverStandings!!) { index, pilot ->
@@ -180,8 +168,25 @@ class FragmentDrivers : Fragment() {
                 .clip(RoundedCornerShape(40.dp))
                 .background(Color.Red)
         ) {
+            var nameImage: String =
+                (pilot.driver?.givenName?.lowercase()
+                    ?: "") + "_" + (pilot.driver?.familyName?.lowercase()
+                    ?: "")
+
+
+            var drawable: Int =
+                requireContext().resources.getIdentifier(
+                    removeAccents(nameImage),
+                    "drawable",
+                    requireContext().packageName
+                )
+
+
+            if (drawable == 0) {
+                drawable = R.drawable.driver_button_image
+            }
             Image(
-                painter = painterResource(id = R.drawable.driver_button_image),
+                painter = painterResource(drawable),
                 contentDescription = "hamilton image",
                 modifier = Modifier
                     .fillMaxSize(),
@@ -289,4 +294,10 @@ class FragmentDrivers : Fragment() {
             }
         }
     }
+    private fun removeAccents(input: String): String {
+        val normalizedString = Normalizer.normalize(input, Normalizer.Form.NFD)
+        val pattern = "\\p{InCombiningDiacriticalMarks}+".toRegex()
+        return pattern.replace(normalizedString, "")
+    }
+
 }
