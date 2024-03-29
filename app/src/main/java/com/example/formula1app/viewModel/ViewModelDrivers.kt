@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.formula1app.model.ApiClient
 import com.example.formula1app.model.driverModel.DriverModel
+import com.example.formula1app.model.driverModel.DriverStanding
 import kotlinx.coroutines.launch
 
 class ViewModelDrivers : ViewModel() {
@@ -19,5 +20,19 @@ class ViewModelDrivers : ViewModel() {
                 println(e.message)
             }
         }
+    }
+
+    fun changeSort() {
+        val tempListPilot = mutableListOf<DriverStanding>()
+
+        val list =
+            listPilot.value?.mRData?.standingsTable?.standingsLists?.get(0)?.driverStandings!!
+        for (index in list.indices) {
+            tempListPilot.add(list[list.size - index - 1])
+        }
+
+
+        listPilot.value?.mRData?.standingsTable?.standingsLists?.get(0)?.driverStandings =
+            tempListPilot.toList()
     }
 }

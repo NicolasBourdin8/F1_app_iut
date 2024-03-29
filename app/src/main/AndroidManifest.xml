@@ -12,7 +12,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Formula1App"
+        android:theme="@style/Theme.SplashScreen.MySplash"
         tools:targetApi="31">
 
         <meta-data
@@ -22,12 +22,12 @@
         <activity
             android:name=".MapsActivity"
             android:exported="false"
-            android:label="@string/title_activity_maps" />
+            android:label="@string/title_activity_maps"
+            android:theme="@style/Theme.Formula1App" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.Formula1App">
+            android:theme="@style/Theme.SplashScreen.MySplash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

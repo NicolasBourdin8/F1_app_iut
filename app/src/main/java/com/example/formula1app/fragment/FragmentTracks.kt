@@ -1,5 +1,6 @@
 package com.example.formula1app.fragment
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -24,6 +25,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -87,30 +89,41 @@ class FragmentTracks : Fragment() {
                             color = Color.White
                         )
 
-                        Button(onClick = {
-                            val listTrackLocations = mutableListOf<Pair<Double, Double>>()
+                        Button(
+                            onClick = {
+                                val listTrackLocations = mutableListOf<Pair<Double, Double>>()
+                                val listNameTrack = mutableListOf<String>()
+                                val listDateTrack = mutableListOf<String>()
 
-                            for (race in viewModel.listTrack.value?.mRData?.raceTable?.races!!) {
-                                race.circuit?.location?.let {
-                                    it.lat?.let { it1 ->
-                                        it.long?.let { it2 ->
-                                            Pair(
-                                                it1.toDouble(),
-                                                it2.toDouble()
-                                            )
+                                for (race in viewModel.listTrack.value?.mRData?.raceTable?.races!!) {
+                                    race.circuit?.location?.let {
+                                        it.lat?.let { it1 ->
+                                            it.long?.let { it2 ->
+                                                Pair(
+                                                    it1.toDouble(),
+                                                    it2.toDouble()
+                                                )
+                                            }
                                         }
+                                            ?.let { it2 -> listTrackLocations.add(it2) }
                                     }
-                                        ?.let { it2 -> listTrackLocations.add(it2) }
+                                    race.raceName?.let { listNameTrack.add(it) }
+                                    race.date?.let { listDateTrack.add(it) }
                                 }
-                            }
 
-                            val intent =
-                                Intent(context, MapsActivity::class.java)
-                            intent.putExtra("listLocationTrack", ArrayList(listTrackLocations))
+                                val intent =
+                                    Intent(context, MapsActivity::class.java)
+                                intent.putExtra("listLocationTrack", ArrayList(listTrackLocations))
+                                intent.putExtra("listTrackName", ArrayList(listNameTrack))
+                                intent.putExtra("listDateTrack", ArrayList(listDateTrack))
 
-                            getResult.launch(intent)
+                                getResult.launch(intent)
 
-                        }) {
+                            },
+                            colors =
+                                ButtonDefaults.buttonColors(Color.Red),
+                            modifier = Modifier.padding(top = 20.dp)
+                        ) {
                             Text(text = "Show all tracks")
                         }
                     }
@@ -144,6 +157,7 @@ class FragmentTracks : Fragment() {
         }
     }
 
+    @SuppressLint("DiscouragedApi")
     @Composable
     fun DisplayPilotCard(race: Race, modifier: Modifier) {
         val getResult =
@@ -159,7 +173,7 @@ class FragmentTracks : Fragment() {
                 requireContext().packageName
             )
 
-        
+
         if (drawable == 0) {
             drawable = R.drawable.driver_button_image
         }
@@ -224,11 +238,20 @@ class FragmentTracks : Fragment() {
                         .padding(top = 15.dp, bottom = 20.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Row {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         Text(
                             text = "Round " + race.round.toString(), fontFamily = formulaFont,
                             fontWeight = FontWeight.Normal,
                             color = Color.White
+                        )
+                        Text(
+                            text = race.date.toString(),
+                            fontWeight = FontWeight.Normal,
+                            color = Color.White,
+                            modifier = Modifier.padding(end = 50.dp)
                         )
                     }
                 }
