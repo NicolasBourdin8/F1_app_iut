@@ -6,16 +6,16 @@ import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.material3.Snackbar
-import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.formula1app.fragment.FragmentHome
-import kotlinx.coroutines.delay
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen().setKeepOnScreenCondition { isOnline(applicationContext) }
+        installSplashScreen().setKeepOnScreenCondition {
+            isOnline(applicationContext)
+        }
 
         super.onCreate(savedInstanceState)
 
@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isOnline(context: Context): Boolean {
+
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val capabilities =
@@ -44,6 +45,8 @@ class MainActivity : AppCompatActivity() {
                 return false
             }
         }
+
+        Toast.makeText(applicationContext,"No connection",Toast.LENGTH_SHORT).show()
         return true
     }
 }
