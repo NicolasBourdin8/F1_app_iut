@@ -1,4 +1,4 @@
-package com.example.formula1app.fragment
+package com.example.formula1app.view.fragment
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.example.formula1app.MapsActivity
+import com.example.formula1app.view.MapsActivity
 import com.example.formula1app.R
 import com.example.formula1app.model.trackModel.Race
 import com.example.formula1app.ui.theme.formulaFont

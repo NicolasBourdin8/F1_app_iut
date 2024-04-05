@@ -1,4 +1,4 @@
-package com.example.formula1app
+package com.example.formula1app.view
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

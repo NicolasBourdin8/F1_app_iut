@@ -1,6 +1,5 @@
-package com.example.formula1app.fragment
+package com.example.formula1app.view.fragment
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -44,18 +43,20 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.formula1app.R
-import com.example.formula1app.model.constructorModel.ConstructorStanding
 import com.example.formula1app.model.driverModel.Constructor
 import com.example.formula1app.model.driverModel.Driver
 import com.example.formula1app.model.driverModel.DriverStanding
 import com.example.formula1app.ui.theme.formulaFont
-import com.example.formula1app.viewModel.ViewModelConstructors
+import com.example.formula1app.viewModel.ViewModelDrivers
+import java.text.Normalizer
 
-class FragmentConstructors : Fragment() {
-    private val viewModel by viewModels<ViewModelConstructors>()
+class FragmentDrivers : Fragment() {
+    private val viewModel by viewModels<ViewModelDrivers>()
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.getConstructors()
+        viewModel.getDrivers()
     }
 
     override fun onCreateView(
@@ -68,7 +69,7 @@ class FragmentConstructors : Fragment() {
                 Column {
                     Row {
                         Text(
-                            text = "Constructors",
+                            text = "Drivers",
                             fontSize = 20.sp,
                             fontFamily = formulaFont,
                             fontWeight = FontWeight.Bold,
@@ -91,7 +92,7 @@ class FragmentConstructors : Fragment() {
                                 .rotate(orientation)
                         )
                     }
-                    DisplayConstructors()
+                    DisplayPilot()
                     Spacer(modifier = Modifier.height(50.dp))
                     Row(
                         modifier = Modifier.fillMaxSize(),
@@ -137,24 +138,46 @@ class FragmentConstructors : Fragment() {
         return fakeList
     }
 
+    @Composable
+    fun DisplayPilotNoAPI() {
+
+        val listDriver = createFakeList()
+
+        LazyRow(
+            Modifier
+                .padding(top = 60.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            itemsIndexed(listDriver) { index, pilot ->
+                if (index == 0) {
+                    DisplayPilotCard(
+                        pilot = pilot,
+                        modifier = Modifier.padding(start = 20.dp)
+                    )
+                } else {
+                    DisplayPilotCard(pilot = pilot, modifier = Modifier)
+                }
+            }
+        }
+    }
 
     @Composable
-    fun DisplayConstructors() {
+    fun DisplayPilot() {
         viewModel.listPilot.value?.let { listPilot ->
-            if (!listPilot.mRData?.standingsTable?.standingsLists?.get(0)?.constructorStandings.isNullOrEmpty()) {
+            if (!listPilot.mRData?.standingsTable?.standingsLists?.get(0)?.driverStandings.isNullOrEmpty()) {
                 LazyRow(
                     Modifier
                         .padding(top = 60.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    itemsIndexed(listPilot.mRData?.standingsTable?.standingsLists?.get(0)?.constructorStandings!!) { index, constructor ->
+                    itemsIndexed(listPilot.mRData?.standingsTable?.standingsLists?.get(0)?.driverStandings!!) { index, pilot ->
                         if (index == 0) {
-                            DisplayConstructorCard(
-                                constructor = constructor,
+                            DisplayPilotCard(
+                                pilot = pilot,
                                 modifier = Modifier.padding(start = 20.dp)
                             )
                         } else {
-                            DisplayConstructorCard(constructor = constructor, modifier = Modifier)
+                            DisplayPilotCard(pilot = pilot, modifier = Modifier)
                         }
                     }
                 }
@@ -162,22 +185,9 @@ class FragmentConstructors : Fragment() {
         }
     }
 
-    @SuppressLint("DiscouragedApi")
     @Composable
-    fun DisplayConstructorCard(constructor: ConstructorStanding, modifier: Modifier) {
+    fun DisplayPilotCard(pilot: DriverStanding, modifier: Modifier) {
         val uriHandler = LocalUriHandler.current
-
-        var drawable: Int =
-            requireContext().resources.getIdentifier(
-                constructor.constructor?.name?.lowercase()?.replace(' ', '_'),
-                "drawable",
-                requireContext().packageName
-            )
-
-
-        if (drawable == 0) {
-            drawable = R.drawable.driver_button_image
-        }
 
         Box(
             modifier = modifier
@@ -186,11 +196,28 @@ class FragmentConstructors : Fragment() {
                 .clip(RoundedCornerShape(40.dp))
                 .background(Color.Red)
                 .clickable {
-                    constructor.constructor?.url?.let { uriHandler.openUri(it) }
+                    pilot.driver?.url?.let { uriHandler.openUri(it) }
                 }
         ) {
+            var nameImage: String =
+                (pilot.driver?.givenName?.lowercase()
+                    ?: "") + "_" + (pilot.driver?.familyName?.lowercase()
+                    ?: "")
+
+
+            var drawable: Int =
+                requireContext().resources.getIdentifier(
+                    removeAccents(nameImage),
+                    "drawable",
+                    requireContext().packageName
+                )
+
+
+            if (drawable == 0) {
+                drawable = R.drawable.driver_button_image
+            }
             Image(
-                painter = painterResource(id = drawable),
+                painter = painterResource(drawable),
                 contentDescription = "hamilton image",
                 modifier = Modifier
                     .fillMaxSize(),
@@ -202,6 +229,24 @@ class FragmentConstructors : Fragment() {
                     .background(Color.Black.copy(alpha = 0.4f))
             ) {
             }
+
+            Row(
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(end = 40.dp, top = 20.dp)
+            ) {
+
+                Text(
+                    text = pilot.position.orEmpty(),
+                    fontSize = 25.sp,
+                    fontFamily = formulaFont,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -217,7 +262,7 @@ class FragmentConstructors : Fragment() {
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.Bottom
                     ) {
-                        constructor.constructor?.name?.let {
+                        pilot.driver?.givenName?.let {
                             Text(
                                 text = it,
                                 fontSize = 22.sp,
@@ -226,8 +271,18 @@ class FragmentConstructors : Fragment() {
                                 color = Color.White
                             )
                         }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        pilot.driver?.familyName?.let {
+                            Text(
+                                text = it,
+                                fontSize = 22.sp,
+                                fontFamily = formulaFont,
+                                fontWeight = FontWeight.Normal,
+                                color = Color.White
+                            )
+                        }
                     }
-                    constructor.points?.let {
+                    pilot.points?.let {
                         Text(
                             text = "$it pts",
                             fontSize = 16.sp,
@@ -252,8 +307,16 @@ class FragmentConstructors : Fragment() {
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
-                            text = constructor.wins.orEmpty(), fontFamily = formulaFont,
+                            text = pilot.wins.orEmpty(), fontFamily = formulaFont,
                             fontWeight = FontWeight.Normal,
+                            color = Color.White
+                        )
+                    }
+                    pilot.constructors?.get(0)?.name?.let {
+                        Text(
+                            text = it, modifier = Modifier.padding(end = 20.dp), fontSize = 16.sp,
+                            fontFamily = formulaFont,
+                            fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
                     }
@@ -261,6 +324,12 @@ class FragmentConstructors : Fragment() {
 
             }
         }
+    }
+
+    private fun removeAccents(input: String): String {
+        val normalizedString = Normalizer.normalize(input, Normalizer.Form.NFD)
+        val pattern = "\\p{InCombiningDiacriticalMarks}+".toRegex()
+        return pattern.replace(normalizedString, "")
     }
 
 }

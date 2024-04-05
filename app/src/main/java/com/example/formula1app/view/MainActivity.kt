@@ -1,4 +1,4 @@
-package com.example.formula1app
+package com.example.formula1app.view
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -9,7 +9,8 @@ import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.example.formula1app.fragment.FragmentHome
+import com.example.formula1app.R
+import com.example.formula1app.view.fragment.FragmentHome
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

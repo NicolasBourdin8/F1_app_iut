@@ -20,12 +20,12 @@
             android:value="AIzaSyBjxp8BQAyKkYci1byHekyV1kkV32ejk0A" />
 
         <activity
-            android:name=".MapsActivity"
+            android:name=".view.MapsActivity"
             android:exported="false"
             android:label="@string/title_activity_maps"
             android:theme="@style/Theme.Formula1App" />
         <activity
-            android:name=".MainActivity"
+            android:name=".view.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.SplashScreen.MySplash">
             <intent-filter>
